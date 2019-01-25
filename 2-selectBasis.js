@@ -19,15 +19,8 @@ function selectBasis(transportData, limitsData, targetCount) {
 				basisArray.push({i, j});
 		}
 	}
-
+	
 	const needed = targetCount - basisArray.length;
-
-	// basisArray.forEach(idx =>  { println(transportData[idx.i][idx.j]) });
-	// println(basisArray.map(nd => `(${nd.i};${nd.j})`));
-
-	// const l = isLoop(basisArray, 3, 4);
-
-
 	for(var z = 0; z < needed; z++) {
 		var stop = false;
 		for(var i = 0; i < transportData.length && !stop; i++) {
@@ -35,15 +28,11 @@ function selectBasis(transportData, limitsData, targetCount) {
 				if(basisArray.some(idx => idx.i == i && idx.j == j)) continue;
 
 				if(!isLoop(basisArray, i, j)) {
-					println(`(${i};${j})`);
 					basisArray.push({i, j});
 					stop = true;
 				}
 			}
 		}
 	}
-
 	return basisArray;
-
-	// alert(needed);
 }
