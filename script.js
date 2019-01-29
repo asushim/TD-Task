@@ -19,9 +19,12 @@ function start() {
 	const rowsCount = senders.length + 1;
 	const colsCount = receivers.length + 1;
 
+	//Присобачим фиктивные строки снизу и справа
 	var customTransports = [...transports.map((row, idx) => [...row, sendersLeft[idx]]), [...receiversLeft, 0]];
 
 	var cLimits = [...limits.map((row, idx) => [...row, BIGGEST_VALUE]),  new Array(colsCount).fill(BIGGEST_VALUE)];
 
-	const basisArray = selectBasis(customTransports, cLimits, rowsCount + colsCount - 1);
+	const basisMatrix = selectBasis(customTransports, cLimits, rowsCount + colsCount - 1);
+
+	printTable(basisMatrix, [...receivers, 12], [...senders, 12]);
 }

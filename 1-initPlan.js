@@ -1,4 +1,6 @@
 var visited = new Array(senders.length).fill(false).map(() => new Array(receivers.length).fill(false));
+var visitedCount = 0;
+
 var sendersLeft = senders.slice();
 var receiversLeft = receivers.slice();
 var transports = new Array(senders.length).fill(0).map(() => new Array(receivers.length).fill(0));
@@ -35,7 +37,9 @@ function findBestCell(costsCells, visCells, limiters) {
 function fillCell(i, j) {
 	if(visited[i][j])
 		return;
+
 	visited[i][j] = true;
+	visitedCount++;
 	
 	const a = sendersLeft[i];
 	const b = receiversLeft[j];
@@ -63,7 +67,9 @@ function buildInitPlan() {
 
 	var startWithCol = costs[bI][j] < costs[i][bJ];
 
-	while(i || j) {
+	var targetCount = senders.length * receivers.length;
+
+	while((i || j) && (visitedCount < targetCount)) {
 
 		var firstIter = true;
 
@@ -128,4 +134,9 @@ function buildInitPlan() {
 			firstIter = false;
 		}
 	}
+
+	if(visitedCount < targetCount)
+		println('Построение плана завершено, поскольку дальше двигаться некуда.');
+	else
+		println(`Построение плана завершено, поскольку мы посетили все ${targetCount} ячеек.`);
 }
