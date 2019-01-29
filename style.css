@@ -1,0 +1,20 @@
+table {
+      text-align: center;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+table td {
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+}
+
+table th {
+  border: 2px solid rgba(0, 0, 0, 0.6);
+  width: 40px;
+  height: 40px;
+}
+
+.colored {
+  border: 2px solid red;
+}

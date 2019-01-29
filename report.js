@@ -1,5 +1,5 @@
 function reportTable() {
-	printTable(transports, receivers, senders, receiversLeft, sendersLeft);
+	print(createTable(transports, receivers, senders));
 }
 
 function reportResultTable() {
@@ -10,7 +10,7 @@ function reportResultTable() {
 
 	var customTransports = [...transports.map((row, idx) => [...row, sendersLeft[idx]]), [...receiversLeft, 0]];
 
-	printTable(customTransports, [...receivers, s], [...senders, s]);
+	print(createTable(customTransports, [...receivers, s], [...senders, s]));
 }
 
 function reportSwitchPlan(row, idx) {
@@ -38,8 +38,13 @@ function reportFictiveTable() {
 }
 
 function reportIntro() {
-	println("Всем привет!");
- 	reportTable();
+ 	document.body.innerHTML += '<div style="display: inline-block">' +
+ 	'Стоимости (c<sub>ij</sub>):' +
+ 	createTable(costs, receivers, senders, undefined, 'a<sub>i</sub>/b<sub>i</sub>') +
+ 	'</div><div style="display: inline-block; margin-left: 20px;">' +
+ 	'Ограничения (d<sub>ij</sub>):' +
+ 	createTable(limits, undefined, undefined) +
+ 	'</div>';
 }
 
 function reportBalanced(balanced, sum) {

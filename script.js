@@ -1,10 +1,11 @@
+document.addEventListener('DOMContentLoaded', start);
+
 function start() {
 	//Тем кто читает и возможно хочет понять этот код:
 	//Игнорьте нахой все функции начинающиеся на report.
 	//Они всего лишь выводят (в html) тексты и таблицы.
 	//Их код можете найти в файле report.js.
 	//Если потереть эти вызовы, прога даже не сломается, ей насрать.
-
 	reportIntro();
 
 	const balanced = sum(senders) == sum(receivers);
@@ -26,5 +27,5 @@ function start() {
 
 	const basisMatrix = selectBasis(customTransports, cLimits, rowsCount + colsCount - 1);
 
-	printTable(basisMatrix, [...receivers, 12], [...senders, 12]);
+	print(createTable(basisMatrix, [...receivers, 12], [...senders, 12]));
 }
