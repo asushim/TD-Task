@@ -147,6 +147,13 @@ function reportMinPlan1(i, j, firstFill) {
 		а для ПН №${j + 1} ${receiversLeft[j] + firstFill} - ${firstFill} = ${receiversLeft[j]}`)
 }
 
+function reportFucked(howMuch) {
+	print(`Не хватает места для ${howMuch} переменных.`);
+	print(`Похоже, эта ошибка все таки произошла.
+		Пришлите нам на goldislove@mail.ru письмо с темой "ТД калькулятор -
+		не хватает места для ${howMuch} переменных" и пришлите входные данные. Постараемся пофиксить и дадим вам знать:)`)
+}
+
 function rp1(transportData, basisMatrix) {
 	var idxes = []
 	for(var i = 0; i < basisMatrix.length; i++)

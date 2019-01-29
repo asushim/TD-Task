@@ -90,7 +90,7 @@ function selectBasis(transportData, limitsData, targetCount) {
 		const idx = findNextVariable(transportData, basisMatrix);
 
 		if(idx == undefined) {
-			print('Не хватает места для ' + (needed - z ) + ' переменных.');
+			reportFucked(needed - z);
 			return;
 		}
 
