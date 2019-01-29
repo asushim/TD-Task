@@ -79,18 +79,27 @@ function findNextVariable(transportData, basisMatrix) {
 function selectBasis(transportData, limitsData, targetCount) {
 
 	const {basisMatrix, founded} = findMainVariables(transportData, limitsData);
+
+	reportPotentials1(transportData, basisMatrix);
 	
 	const needed = targetCount - founded;
+
+	const newCells = [];
 
 	for(var z = 0; z < needed; z++) {
 		const idx = findNextVariable(transportData, basisMatrix);
 
 		if(idx == undefined) {
-			println('Не хватает места для ' + (needed - z ) + ' переменных.');
+			print('Не хватает места для ' + (needed - z ) + ' переменных.');
 			return;
 		}
 
+		newCells.push(idx);
+
 		basisMatrix[idx.i][idx.j] = true;
 	}
+
+	reportPotentials2(transportData, basisMatrix, newCells, needed, targetCount);
+
 	return basisMatrix;
 }

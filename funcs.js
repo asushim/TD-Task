@@ -1,5 +1,9 @@
 const BIGGEST_VALUE = Number.MAX_SAFE_INTEGER;
 
+var useBuffer = false;
+
+var bufferResult = "";
+
 Array.prototype.column = function(colIdx) { return this.map(c => c[colIdx]) }
 
 function sum(arr)
@@ -9,10 +13,20 @@ function sum(arr)
 
 function print(text)
 {
-	document.body.innerHTML += text;
+	const txt = "<p>" + text + "</p>";
+
+	if(useBuffer)
+		bufferResult += txt;
+	else
+		document.body.innerHTML += txt;
 }
 
-function println(text)
-{
-	document.body.innerHTML += "<p>" + text + "</p>";
+function enableBuffered() {
+	useBuffer = true;
+}
+
+function flushBuffer() {
+	useBuffer = false;
+	print(bufferResult);
+	bufferResult = "";
 }

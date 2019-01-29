@@ -27,5 +27,5 @@ function start() {
 
 	const basisMatrix = selectBasis(customTransports, cLimits, rowsCount + colsCount - 1);
 
-	print(createTable(basisMatrix, [...receivers, 12], [...senders, 12]));
+	// print(createTable(basisMatrix, [...receivers, 12], [...senders, 12]));
 }

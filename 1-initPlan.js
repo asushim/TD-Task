@@ -57,15 +57,15 @@ function fillCell(i, j) {
 function buildInitPlan() {
 	var {i, j} = findFirstIdx();
 
-	reportMinPlan1(i, j);
-
-	fillCell(i, j)
-	reportTable();
+	const firstFill = fillCell(i, j)
+	reportMinPlan1(i, j, firstFill);
 
 	const bI = findBestCell(costs.column(j), visited.column(j), sendersLeft, i);
 	const bJ = findBestCell(costs[i], visited[i], receiversLeft, j);
 
 	var startWithCol = costs[bI][j] < costs[i][bJ];
+
+	reportExplainColumnOrRow(!startWithCol, i, bJ, costs[i][bJ], bI, j, costs[bI][j])
 
 	var targetCount = senders.length * receivers.length;
 
@@ -86,21 +86,22 @@ function buildInitPlan() {
 				break;
 			}
 
-			if(firstIter)
-				reportSwitchPlan(true, i);
+			// if(firstIter)
+				
 
 			var val = fillCell(i, nextJ);
 
 			if(val == 0) {
 				if(firstIter) {
+					reportSwitchPlan(true, i, nextJ > j);
 					j = nextJ;
 					reportFillPlan(i, j, val)
 				}
 				break;
 			}
 
+			reportSwitchPlan(true, i, nextJ > j);
 			j = nextJ;
-
 			reportFillPlan(i, j, val);
 			firstIter = false;
 		}
@@ -115,28 +116,24 @@ function buildInitPlan() {
 				break;
 			}
 
-			if(firstIter)
-				reportSwitchPlan(false, j);
+			// if(firstIter)
 
 			var val = fillCell(nextI, j);
 
 			if(val == 0) {
 				if(firstIter) {
+					reportSwitchPlan(false, j, nextI > i);
 					i = nextI;
 					reportFillPlan(i, j, val)
 				}
 				break;
 			}
 
+			reportSwitchPlan(false, j, nextI > i);
 			i = nextI;
-
 			reportFillPlan(i, j, val);
 			firstIter = false;
 		}
 	}
-
-	if(visitedCount < targetCount)
-		println('Построение плана завершено, поскольку дальше двигаться некуда.');
-	else
-		println(`Построение плана завершено, поскольку мы посетили все ${targetCount} ячеек.`);
+	reportResultInitPlan(visitedCount, targetCount);
 }

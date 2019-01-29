@@ -1,4 +1,4 @@
-function createTable(data, colHeaders, rowHeaders, colors, meta="") {
+function createTable(data, colHeaders, rowHeaders, colors, meta='a<sub>i</sub>/b<sub>j</sub>') {
   let table = '<table>'
 
   if (colHeaders && colHeaders.length > 0) {
