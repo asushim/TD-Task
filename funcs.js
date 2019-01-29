@@ -9,12 +9,12 @@ function sum(arr)
 
 function print(text)
 {
-	document.write(text);
+	document.body.innerHTML += text;
 }
 
 function println(text)
 {
-	document.write("<p>" + text + "</p>")
+	document.body.innerHTML += "<p>" + text + "</p>";
 }
 
 function printTable(tableData, columns, rows, col2, rows2) {
