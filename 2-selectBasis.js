@@ -65,8 +65,8 @@ function findMainVariables(transportData, limitsData) {
 
 //Выбираем переменную, не образующую цикл.
 function findNextVariable(transportData, basisMatrix) {
-	for(var i = 0; i < transportData.length; i++) {
-		for(var j = 0; j < transportData[i].length; j++) {
+	for(var i = 0; i < transportData.length; i++) { //Поменяйте эту
+		for(var j = 0; j < transportData[0].length; j++) {//и эту строчку местами
 			if(basisMatrix[i][j])
 				continue;
 

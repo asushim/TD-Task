@@ -27,6 +27,6 @@ function start() {
 
 	const basisArray = selectBasis(customTransports, cLimits, rowsCount + colsCount - 1);
 
-	const {vArray, uArray} = calc(basisArray);
+	const {vArray, uArray} = calcPotentials(basisArray);
 
 }
