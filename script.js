@@ -34,7 +34,28 @@ function start() {
 
 	for (var i = 0; i < resultPlan.length; i++) {
 		for (var j = 0; j < resultPlan[i].length; j++) {
+			const rs = resultPlan[i][j];
+			if(rs > limits[i][j]) {
+				print(`Ошибка. Такой план не может быть: в клетке (${i + 1};${j + 1}) значение превышает ограничение!`);
+				return;
+			}
+
+			if(rs < 0) {
+				print(`Ошибка. Такой план не может быть: в клетке (${i + 1};${j + 1}) значение отрицательно!`);
+				return;
+			}
 			criteria += resultPlan[i][j] * costs[i][j];
+		}
+		if(sum(resultPlan[i]) != senders[i]) {
+			print(`Ошибка. Такой план не может быть: в строке ${i + 1} значение не равно лимиту поставщика!`);
+			return;
+		}
+	}
+
+	for(var j = 0; j < resultPlan[0].length; j++) {
+		if(sum(resultPlan.map(row => row[j])) != receivers[j]) {
+			print(`Ошибка. Такой план не может быть: в стобце ${j + 1} значение не равно лимиту получателя!`);
+			return;
 		}
 	}
 
