@@ -2,17 +2,57 @@ document.addEventListener('DOMContentLoaded', start);
 
 function start() {
 	//Тем кто читает и возможно хочет понять этот код:
-	//Игнорьте нахой все функции начинающиеся на report.
+	//Можете не брать во внимание все функции, начинающиеся на report.
 	//Они всего лишь выводят (в html) тексты и таблицы.
 	//Их код можете найти в файле report.js.
-	//Если потереть эти вызовы, прога даже не сломается, ей насрать.
+	//Если потереть эти вызовы, прога даже не сломается.
 	reportIntro();
+
+	for(var i = 0; i < senders.length; i++) {
+		if(senders[i] < 0) {
+			print(`Ошибка. Некорректные данные: в строке ${i + 1} значение лимита поставщика отрицательно.`);
+		}
+	}
+
+	for(var j = 0; j < receivers.length; j++) {
+		if(receivers[j] < 0) {
+			print(`Ошибка. Некорректные данные: в столбце ${j + 1} значение лимита получателя отрицательно.`);
+		}
+	}
 
 	const balanced = sum(senders) == sum(receivers);
 	reportBalanced(balanced, sum(senders));
 
 	if(!balanced)
 		return;
+
+	for(var i = 0; i < limits.length; i++) {
+		for(var j = 0; j < limits[0].length; j++) {
+			if(costs[i][j] < 0) {
+				print(`Ошибка. Некорректные данные: в клетке таблицы стоимостей (${i + 1};${j + 1}) значение отрицательно.`);
+				return;
+			}
+
+			if(limits[i][j] < 0) {
+				print(`Ошибка. Некорректные данные: в клетке таблицы ограничений (${i + 1};${j + 1}) значение отрицательно.`);
+				return;
+			}
+		}
+	}
+
+	for(var i = 0; i < limits.length; i++) {
+		if(sum(limits[i]) < senders[i]) {
+			print(`Ошибка. Некорректные данные: в строке ${i + 1} сумма пропускных способностей дорог меньше лимита отправителя. В результате он не сможет реализовать весь груз.`);
+			return;
+		}
+	}
+
+	for(var j = 0; j < limits[0].length; j++) {
+		if(sum(limits.map(row => row[j])) < receivers[j]) {
+			print(`Ошибка. Некорректные данные: в стобце ${j + 1} сумма пропускных способностей дорог меньше лимита получателя. В результате он не сможет получить весь груз.`);
+			return;
+		}
+	}
 
 	buildInitPlan(); //Смотрим объявление в файле initPlan.js
 	reportResultTable();
@@ -27,6 +67,12 @@ function start() {
 	const basisMatrix = selectBasis(extendedTransports, extendedLimits, rowsCount + colsCount - 1);
 
 	const resultPlan = potentialMethod(extendedTransports, extendedLimits, basisMatrix);
+
+	if(resultPlan.length != senders.length) {
+		print(`<p>Ошибка. Согласно расчетам, план является оптимальным, однако, от фиктивных поставщика и получателя мы не избавились.</p>
+			<p>План нереален. Пожалуйста, сообщите нам свои входные данные, чтобы помочь выявить баг.</p>`);
+		return;
+	}
 
 	print(createTable(resultPlan, limits, costs, receivers, senders));
 
