@@ -97,3 +97,24 @@ table th {
   /* border: 2px solid red; */
   color: red;
 }
+
+.paint-d {
+  background-color: #74aeed;
+}
+
+.paint-0 {
+  background-color: #a1e055;
+}
+
+.paint-red {
+background-color: red; 
+}
+
+.paint-border {
+    border: 2px solid red;
+}
+
+.paint-colored-and-gray {
+  color: red;
+  border: 2px solid gray;
+}

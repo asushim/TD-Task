@@ -22,7 +22,10 @@ function createTable(data, dataTopLeft, dataTopRight, colHeaders, rowHeaders, co
       if (colors) {
         colors.forEach(color => {
           if (color.i == idx && color.j == idxJ) {
-            colored = "colored"
+            if(!color.g)
+              colored = "colored";
+            else
+              colored = 'paint-' + color.g;
           }
         })
       }

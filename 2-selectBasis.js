@@ -1,37 +1,50 @@
-function goRow(basisMatrix, targetI, targetJ, fromI, fromJ) {
+function goRow(basisMatrix, targetI, targetJ, fromI, fromJ, idxes) {
 	for(var j = 0; j < basisMatrix[fromI].length; j++) {
 
 		if(j == fromJ)
 			continue;
 
-		if(fromI == targetI && j == targetJ)
+		if(fromI == targetI && j == targetJ) {
+			idxes.push({i:fromI, j});
 			return true;
+		}
 
-		if(basisMatrix[fromI][j] && goColumn(basisMatrix, targetI, targetJ, fromI, j)) 
+		if(basisMatrix[fromI][j] && goColumn(basisMatrix, targetI, targetJ, fromI, j, idxes)) {
+			if(idxes.length > 0)
+				idxes.push({i:fromI, j});
 			return true;
+		}
 
 	}
 	return false;	
 }
 
-function goColumn(basisMatrix, targetI, targetJ, fromI, fromJ) {
+function goColumn(basisMatrix, targetI, targetJ, fromI, fromJ, idxes) {
 	for(var i = 0; i < basisMatrix.length; i++) {
 
 		if(i == fromI)
 			continue;
 
-		if(i == targetI && fromJ == targetJ)
+		if(i == targetI && fromJ == targetJ) {
+			idxes.push({i, j:fromJ});
 			return true;
+		}
 
-		if(basisMatrix[i][fromJ] && goRow(basisMatrix, targetI, targetJ, i, fromJ))
+		if(basisMatrix[i][fromJ] && goRow(basisMatrix, targetI, targetJ, i, fromJ, idxes)) {
+			if(idxes.length > 0)
+				idxes.push({i, j:fromJ});
 			return true;
+		}
 
 	}
 	return false;	
 }
 
-function isLoop(basisMatrix, i, j) {
-	return goRow(basisMatrix, i, j, i, j) || goColumn(basisMatrix, i, j, i, j);
+function findLoop(i, j, basisMatrix) {
+	var idxes = [];
+	const result = goRow(basisMatrix, i, j, i, j, idxes) || goColumn(basisMatrix, i, j, i, j, idxes);
+
+	return result ? idxes : false;
 }
 
 // function isLoop(basisArray, i, j) {
@@ -70,7 +83,7 @@ function findNextVariable(transportData, basisMatrix) {
 			if(basisMatrix[i][j])
 				continue;
 
-			if(!isLoop(basisMatrix, i, j))
+			if(!findLoop(i, j, basisMatrix))
 				return {i, j};
 		}
 	}
@@ -101,12 +114,5 @@ function selectBasis(transportData, limitsData, targetCount) {
 
 	reportBasis2(transportData, basisMatrix, newCells, needed, targetCount);
 
-	var basisArray = [];
-
-	for(var i = 0; i < basisMatrix.length; i++)
-		for(var j = 0; j < basisMatrix[i].length; j++)
-			if(basisMatrix[i][j])
-				basisArray.push({i, j});
-
-	return basisArray;
+	return basisMatrix;
 }

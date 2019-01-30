@@ -21,12 +21,22 @@ function start() {
 	const colsCount = receivers.length + 1;
 
 	//Присобачим фиктивные строки снизу и справа
-	var customTransports = [...transports.map((row, idx) => [...row, sendersLeft[idx]]), [...receiversLeft, 0]];
+	const extendedTransports = [...transports.map((row, idx) => [...row, sendersLeft[idx]]), [...receiversLeft, 0]];
+	const extendedLimits = [...limits.map((row, idx) => [...row, BIGGEST_VALUE]),  new Array(colsCount).fill(BIGGEST_VALUE)];
 
-	var cLimits = [...limits.map((row, idx) => [...row, BIGGEST_VALUE]),  new Array(colsCount).fill(BIGGEST_VALUE)];
+	const basisMatrix = selectBasis(extendedTransports, extendedLimits, rowsCount + colsCount - 1);
 
-	const basisArray = selectBasis(customTransports, cLimits, rowsCount + colsCount - 1);
+	const resultPlan = potentialMethod(extendedTransports, extendedLimits, basisMatrix);
 
-	const {vArray, uArray} = calcPotentials(basisArray);
+	print(createTable(resultPlan, limits, costs, receivers, senders));
 
+	var criteria = 0;
+
+	for (var i = 0; i < resultPlan.length; i++) {
+		for (var j = 0; j < resultPlan[i].length; j++) {
+			criteria += resultPlan[i][j] * costs[i][j];
+		}
+	}
+
+	print(`Значение критерия: <b>${criteria}</b>`);
 }
