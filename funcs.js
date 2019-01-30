@@ -1,4 +1,5 @@
 const BIGGEST_VALUE = Number.MAX_SAFE_INTEGER;
+const inf = '<i>m</i>';
 
 var useBuffer = false;
 

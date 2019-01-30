@@ -24,7 +24,6 @@ function reportBalanced(balanced, sum) {
 		print("Задача не сбалансирована");
 }
 
-const inf = '<i>m</i>';
 const customLimits = [...limits.map((row, idx) => [...row, inf]), new Array(receivers.length + 1).fill(inf)];
 const customCosts = [...costs.map((row, idx) => [...row, inf]), [...new Array(receivers.length).fill(inf), '0']];
 
