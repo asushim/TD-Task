@@ -1,5 +1,17 @@
+const inf = '<i>m</i>';
+
+const customLimits = [...limits.map((row, idx) => [...row, inf]), new Array(receivers.length + 1).fill(inf)];
+const customCosts = [...costs.map((row, idx) => [...row, inf]), [...new Array(receivers.length).fill(inf), '0']];
+
 function reportTable() {
-	print(createTable(transports, receivers, senders));
+	print(createTable(transports, limits, costs, receivers, senders));
+}
+
+function repExtendedTable() {
+
+	const s = sum(receiversLeft);
+	const customTransports = [...transports.map((row, idx) => [...row, sendersLeft[idx]]), [...receiversLeft, 0]];
+	print(createTable(customTransports, customLimits, customCosts, [...receivers, s], [...senders, s]));
 }
 
 function reportResultTable() {
@@ -21,17 +33,13 @@ function reportResultTable() {
 
 	print(`<ul>${nds}</ul>`);
 
-	var s = sum(receiversLeft);
-
 	print(`Дабы разрешить эту проблему, добавим одного фиктивного поставщика, который "отвезет" груз нашим обделенным получателям. Еще добавим и фиктивного получателя,
 		который "примет" груз от неполностью реализовавших себя поставщиков.
-		Лимит и того и другого - ${s}, т.к. именно столько груза в сумме не было вывезено/довезено. В результате получим план, который называется искусственным.`);
+		Лимит и того и другого - ${sum(receiversLeft)}, т.к. именно столько груза в сумме не было вывезено/довезено. В результате получим план, который называется искусственным.`);
 
-	var customTransports = [...transports.map((row, idx) => [...row, sendersLeft[idx]]), [...receiversLeft, 0]];
+	repExtendedTable();
 
-	print(createTable(customTransports, [...receivers, s], [...senders, s]));
-
-	print(`Пропускная способность фиктивных путей неограничена (будем обозначать их как бесконечность символом <i>m</i>.).
+	print(`Пропускная способность фиктивных путей неограничена (будем обозначать их как бесконечность символом ${inf}.).
 		Халявы, однако, не будет - стоимость провоза по таким безграничным путям тоже равна бесконечности, за исключением пути между
 		фиктивным поставщиком и потребителем - здесь она ничего не стоит (0).`);
 
@@ -51,8 +59,10 @@ function reportResultInitPlan(visitedCount, targetCount) {
 		print(`Построение плана завершено, поскольку мы посетили все ${targetCount} ячеек.`);
 }
 
+var initPlanCounter = 1;
+
 function reportSwitchPlan(row, idx, dir) {
-	print(`Двигаемся ${row ? (dir ? 'вправо' : 'влево') : (dir ? 'вниз' : 'вверх')} по ${row ? 'строке' : 'столбцу'} ${idx + 1}:`);
+	print(`${initPlanCounter++}) Двигаемся ${row ? (dir ? 'вправо' : 'влево') : (dir ? 'вниз' : 'вверх')} по ${row ? 'строке' : 'столбцу'} ${idx + 1}:`);
 }
 
 function reportFillPlan(i, j, val) {
@@ -68,7 +78,7 @@ function reportFillPlan(i, j, val) {
 	else
 		print("X" + i + "" + j + " = min(" + a + ";" + b  + ";" + c + ") = " + minTrans);
 
-	reportFillCell(i - 1, j - 1);
+	reportFillCell(i - 1, j - 1, true);
 }
 
 function reportFictiveTable() {
@@ -85,10 +95,10 @@ function reportIntro() {
 		</ul>`);
  	document.body.innerHTML += '<div style="display: inline-block">' +
  	'Стоимости (c<sub>ij</sub>). В этой таблице показана<br>стоимость провоза по каждому из путей от<br>ПО<sub>i</sub> до ПН<sub>j</sub>. В заголовках таблицы - их<br>лимиты.' +
- 	createTable(costs, receivers, senders) +
+ 	createTable(costs, undefined, undefined, receivers, senders) +
  	'</div><div style="display: inline-block; margin-left: 20px;">' +
  	'Ограничения (d<sub>ij</sub>). Максимальное<br>кол-во единиц груза, который можно<br>провезти от<br>ПО<sub>i</sub> до ПН<sub>j</sub>.' +
- 	createTable(limits) +
+ 	createTable(limits, undefined, undefined, receivers, senders) +
  	'</div>';
 }
 
@@ -99,8 +109,14 @@ function reportBalanced(balanced, sum) {
 		print("Задача не сбалансирована");
 }
 
-function reportFillCell(i, j) {
-	print(createTable(transports, receivers, senders, [{i, j}]));
+const comboReceivers = () => receivers.map((val, idx) => `${val} (${receiversLeft[idx]})`);
+const comboSenders = () => senders.map((val, idx) => `${val} (${sendersLeft[idx]})`);
+
+function reportFillCell(i, j, useBrackets = false) {
+	const r = useBrackets ? comboReceivers() : receivers;
+	const s = useBrackets ? comboSenders() : senders;
+
+	print(createTable(transports, limits, costs, r, s, [{i, j}]));
 }
 
 function reportExplainColumnOrRow(row, rowI, rowJ, rowValue, colI, colJ, colValue) {
@@ -108,15 +124,15 @@ function reportExplainColumnOrRow(row, rowI, rowJ, rowValue, colI, colJ, colValu
 	print(`Окей, теперь выберем, куда будем двигаться при построении плана: по строке или столбцу?
 		Для этого давайте поищем в таблице стоимостей в столбце ${colJ + 1} и строке ${rowI + 1} другие самые дешевые пути.`);
 
-	print('<i>Таблица c<sub>ij</sub></i>')
-	print(createTable(costs, undefined, undefined, [{'i':rowI, 'j':rowJ}, {'i':colI, 'j':colJ}]));
+	print(createTable(transports, limits, costs, comboReceivers(), comboSenders(), [{i:rowI, j:rowJ}, {i:colI, j:colJ}]));
 
-	print(`Как вы можете видеть, в столбце самый дешевый путь стоит ${colValue}, а в строке - ${rowValue}.
-		Поэтому двигаемся по ${row ? 'строке' : 'столбцу'}.`);
+	print(`Как вы можете видеть, в столбце самый дешевый путь стоит ${colValue}, а в строке - ${rowValue}. Мы должны пытаться отправить как можно больше груза по дешевыми путям,
+		поэтому двигаемся по ${row ? 'строке' : 'столбцу'}.`);
 
-	print(`Таким образом, правила движения просты:<ol>
+	print(`Правила движения:<ol>
 		<li>выбрать для текущей клетки ее столбец или строку, смотря где есть путь подешевле;</li>
-		<li>двигаться по этой строке/столбцу, пока все клетки не будут заполнены или не исчерпается лимит ПО или ПН;</li>
+		<li>двигаться по этой строке/столбцу, пока все клетки не будут заполнены или не исчерпается лимит ПО или ПН. <b>Пока этого не произойдет,
+		свернуть со строки на столбец (или наоборот) мы не можем</b>;</li>
 		<li>перейти к пункту 1.</li>
 		</ol>`)
 
@@ -129,10 +145,10 @@ function reportExplainColumnOrRow(row, rowI, rowJ, rowValue, colI, colJ, colValu
 	print('<details><summary>Построение первоначального плана (развернуть)</summary>');
 }
 
-function reportMinPlan1(i, j, firstFill) {
+function reportMinPlan1(i, j) {
 
-	const a = sendersLeft[i] + firstFill;
-	const b = receiversLeft[j] + firstFill;
+	const a = sendersLeft[i];
+	const b = receiversLeft[j];
 	const c = limits[i][j];
 	const minTrans = Math.min(a, b, c);
 
@@ -142,10 +158,9 @@ function reportMinPlan1(i, j, firstFill) {
 
 	print('Исходя из этого, мы будем стараться посылать максимум груза по дешевым путям, и минимум - по дорогим.');
 
-	print(`Давайте начнем. Найдем в таблице c<sub>ij</sub> клетку-путь с минимальными затратами. Нам подходит, например, клетка (${i + 1};${j + 1}).`);
+	print(`Давайте начнем. Найдем клетку-путь с минимальными затратами (смотрите на синие цифры в правом верхнем углу). Нам подходит, например, клетка (${i + 1};${j + 1}).`);
 
-	print('<i>Таблица c<sub>ij</sub></i>')
-	print(createTable(costs, undefined, undefined, [{i, j,}]));
+	reportFillCell(i, j);
 
 	print(`Как вы можете видеть, перевозка между ПО №${i + 1} до ПН №${j + 1} стоит всего лишь ${costs[i][j]}.
 		Теперь нам нужно найти, сколько мы можем максимум перевезти по этому пути.`);
@@ -153,7 +168,7 @@ function reportMinPlan1(i, j, firstFill) {
 	print(`На перевозку действует три ограничения:<ul>
 		<li>максимум груза в ПО (как мы видим, это ${a});</li>
 		<li>сколько максимум принимает ПН (${b});</li>
-		<li>ограничение проп. способности пути от ПО до ПН (смотрите в таблицу d<sub>ij</sub>, это ${c});</li>
+		<li>ограничение d<sub>ij</sub> пропускной способности пути от ПО до ПН (смотрите на красные цифры в левом углу), для нашей клетки это ${c};</li>
 		</ul>`)
 
 	print('Понятно, что мы не можем вывезти больше чем есть в ПО, или больше, чем принимает ПН или больше пропускной способности дороги между ними.')
@@ -161,11 +176,14 @@ function reportMinPlan1(i, j, firstFill) {
 	print(`X<sub>${i + 1}${j + 1}</sub> = min(a<sub>i</sub>; b<sub>j</sub>; d<sub>ij</sub>) = min(${a};${b};${c}) = ${minTrans}`);
 
 	print(`Внесем это значение в наш план перевозок:`);
-	reportFillCell(i, j);
+}
+
+function reportMinPlan2(i, j, firstFill) {
+	reportFillCell(i, j, true);
 
 	print(`<b>Учтите</b>, что мы вычитаем полученное значение из лимита ПО и ПН, поскольку, по факту, мы доставили этот груз.
 		Оставшийся лимит ПО №${i + 1} составит ${sendersLeft[i] + firstFill} - ${firstFill} = ${sendersLeft[i]},
-		а для ПН №${j + 1} ${receiversLeft[j] + firstFill} - ${firstFill} = ${receiversLeft[j]}`)
+		а для ПН №${j + 1} ${receiversLeft[j] + firstFill} - ${firstFill} = ${receiversLeft[j]}. В скобках мы будем приводить нереализованный на данный момент лимит.`)
 }
 
 function reportFucked(howMuch) {
@@ -185,7 +203,7 @@ function rp1(transportData, basisMatrix) {
 
 	var s = sum(receiversLeft);
 
-	print(createTable(transportData, [...receivers, s], [...senders, s], idxes));	
+	print(createTable(transportData, customLimits, customCosts, [...receivers, s], [...senders, s], idxes));	
 }
 
 function reportPotentials1(transportData, basisMatrix) {

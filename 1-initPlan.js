@@ -36,7 +36,7 @@ function findBestCell(costsCells, visCells, limiters) {
 
 function fillCell(i, j) {
 	if(visited[i][j])
-		return;
+		return 0;
 
 	visited[i][j] = true;
 	visitedCount++;
@@ -57,8 +57,9 @@ function fillCell(i, j) {
 function buildInitPlan() {
 	var {i, j} = findFirstIdx();
 
+	reportMinPlan1(i, j);
 	const firstFill = fillCell(i, j)
-	reportMinPlan1(i, j, firstFill);
+	reportMinPlan2(i, j, firstFill);
 
 	const bI = findBestCell(costs.column(j), visited.column(j), sendersLeft, i);
 	const bJ = findBestCell(costs[i], visited[i], receiversLeft, j);
