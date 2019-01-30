@@ -1,5 +1,30 @@
-const inf = '<i>m</i>';
+function reportIntro() {
+	print('Терминология:')
+	print(`<ul>
+		<li><b>ПО</b> - пункт отправления a.k.a поставщик, отправитель.</li>
+		<li><b>ПН</b> - пункт назначения, получатель.</li>
+		<li><b>Груз</b> - единицы этого мы перевозим.</li>
+		<li><b>Лимит</b> - так я называю макс. количество груза, которое вывозит ПО и принимает ПН. Надо бы поменьше в стратежки играть. Обозначется как <b>a<sub>i</sub></b> для ПО и <b>b<sub>j</sub></b> для ПН.</li>
+		</ul>`);
+ 	document.body.innerHTML += '<div style="display: inline-block">' +
+ 	'Стоимости (затраты) c<sub>ij</sub>. В этой таблице показана стоимость<br>провоза по каждому из путей от ПО<sub>i</sub> до ПН<sub>j</sub>.' +
+ 	createTable(costs, undefined, undefined, receivers, senders) +
+ 	'</div><div style="display: inline-block; margin-left: 20px;">' +
+ 	'Ограничения d<sub>ij</sub>. Максимальное кол-во единиц груза,<br>который можно провезти по каждому из путей от ПО<sub>i</sub> до ПН<sub>j</sub>.' +
+ 	createTable(limits, undefined, undefined, receivers, senders) +
+ 	'</div>';
 
+ 	print('В заголовках таблиц по вертикали указаны лимиты для ПО, по горизонтали - для ПН');
+}
+
+function reportBalanced(balanced, sum) {
+	if(balanced)
+		print("Сумма лимита ПО = сумма лимита ПН = " + sum + " => задача сбалансирована (весь груз может быть вывезен, все ПН получат груз полностью).");
+	else
+		print("Задача не сбалансирована");
+}
+
+const inf = '<i>m</i>';
 const customLimits = [...limits.map((row, idx) => [...row, inf]), new Array(receivers.length + 1).fill(inf)];
 const customCosts = [...costs.map((row, idx) => [...row, inf]), [...new Array(receivers.length).fill(inf), '0']];
 
@@ -19,7 +44,7 @@ function reportResultTable() {
 	print('</details>');
 	flushBuffer();
 
-	print(`Получаем первоначальный план. Вы можете убедиться в его правильности: ни одна клетка не превышает соответствующего ей значения в таблице d<sub>ij</sub>,
+	print(`Получаем первоначальный план. Вы можете убедиться в его правильности: ни одна клетка не превышает соответствующего ей значения в таблице d<sub>ij</sub> (красная циферка),
 		сумма значений любой строки не превышает лимита соответствующего ПО, а сумма столбца - соответствующего ПН.`);
 
 	reportTable();
@@ -49,7 +74,7 @@ function reportResultTable() {
 	print(`Поскольку мы не можем предоставить нашему начальству (вы понимаете, о ком я?) план, включающий в себя мистические создания, нужно исправить его при помощи метода потенциалов.
 		Суть вот в чем: эта хитрая штука будет ловко перекидывать грузы от фиктивных поставщиков и получателей реальным.
 		При этом он будет стремиться распределить как можно больше груза на путях с наименьшей стоимостью. А поскольку у мистических-фиктивных ПО/ПН стоимость бесконечна,
-		от них он очень скоро избавится, и в результате еще спустя несколько итераций мы получим наш оптимальный план.`);
+		от них он очень скоро избавится, и в результате еще спустя несколько итераций мы получим наш оптимальный план. Этакая магия вне... политеха.`);
 }
 
 function reportResultInitPlan(visitedCount, targetCount) {
@@ -83,30 +108,6 @@ function reportFillPlan(i, j, val) {
 
 function reportFictiveTable() {
 
-}
-
-function reportIntro() {
-	print('Терминология:')
-	print(`<ul>
-		<li><b>ПО</b> - пункт отправления a.k.a поставщик, отправитель.</li>
-		<li><b>ПН</b> - пункт назначения, получатель.</li>
-		<li><b>Груз</b> - единицы этого мы перевозим.</li>
-		<li><b>Лимит</b> - так я называю оставшийся у ПО/ПН груз. Надо бы поменьше в стратежки играть. Обозначется как <b>a<sub>i</sub></b> для ПО и <b>b<sub>j</sub></b> для ПН.</li>
-		</ul>`);
- 	document.body.innerHTML += '<div style="display: inline-block">' +
- 	'Стоимости (c<sub>ij</sub>). В этой таблице показана<br>стоимость провоза по каждому из путей от<br>ПО<sub>i</sub> до ПН<sub>j</sub>. В заголовках таблицы - их<br>лимиты.' +
- 	createTable(costs, undefined, undefined, receivers, senders) +
- 	'</div><div style="display: inline-block; margin-left: 20px;">' +
- 	'Ограничения (d<sub>ij</sub>). Максимальное<br>кол-во единиц груза, который можно<br>провезти от<br>ПО<sub>i</sub> до ПН<sub>j</sub>.' +
- 	createTable(limits, undefined, undefined, receivers, senders) +
- 	'</div>';
-}
-
-function reportBalanced(balanced, sum) {
-	if(balanced)
-		print("Сумма лимита ПО = сумма лимита ПН = " + sum + " => задача сбалансирована (весь груз может быть вывезен, все ПН получат груз полностью).");
-	else
-		print("Задача не сбалансирована");
 }
 
 const comboReceivers = () => receivers.map((val, idx) => `${val} (${receiversLeft[idx]})`);
