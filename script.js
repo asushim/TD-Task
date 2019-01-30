@@ -25,7 +25,8 @@ function start() {
 
 	var cLimits = [...limits.map((row, idx) => [...row, BIGGEST_VALUE]),  new Array(colsCount).fill(BIGGEST_VALUE)];
 
-	const basisMatrix = selectBasis(customTransports, cLimits, rowsCount + colsCount - 1);
+	const basisArray = selectBasis(customTransports, cLimits, rowsCount + colsCount - 1);
 
-	// print(createTable(basisMatrix, [...receivers, 12], [...senders, 12]));
+	const {vArray, uArray} = calc(basisArray);
+
 }

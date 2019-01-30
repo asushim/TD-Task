@@ -25,7 +25,7 @@ function reportBalanced(balanced, sum) {
 }
 
 const customLimits = [...limits.map((row, idx) => [...row, inf]), new Array(receivers.length + 1).fill(inf)];
-const customCosts = [...costs.map((row, idx) => [...row, inf]), [...new Array(receivers.length).fill(inf), '0']];
+// const infCosts = [...costs.map((row, idx) => [...row, inf]), [...new Array(receivers.length).fill(inf), '0']];
 
 function reportTable() {
 	print(createTable(transports, limits, costs, receivers, senders));
@@ -35,7 +35,7 @@ function repExtendedTable() {
 
 	const s = sum(receiversLeft);
 	const customTransports = [...transports.map((row, idx) => [...row, sendersLeft[idx]]), [...receiversLeft, 0]];
-	print(createTable(customTransports, customLimits, customCosts, [...receivers, s], [...senders, s]));
+	print(createTable(customTransports, customLimits, infCosts, [...receivers, s], [...senders, s]));
 }
 
 function reportResultTable() {
@@ -203,10 +203,10 @@ function rp1(transportData, basisMatrix) {
 
 	var s = sum(receiversLeft);
 
-	print(createTable(transportData, customLimits, customCosts, [...receivers, s], [...senders, s], idxes));	
+	print(createTable(transportData, customLimits, infCosts, [...receivers, s], [...senders, s], idxes));	
 }
 
-function reportPotentials1(transportData, basisMatrix) {
+function reportBasis1(transportData, basisMatrix) {
 	print('<h1>Этап 2: Метод потенциалов.</h1>');
 	print('Прежде всего, выберем так называемые "базисные переменные".')
 	print('Сперва выбираем в нашем плане все клетки, значение которых больше нуля, но меньше ограничения d<sub>ij</sub>.');
@@ -217,7 +217,7 @@ function reportPotentials1(transportData, basisMatrix) {
 	rp1(transportData, basisMatrix);
 }
 
-function reportPotentials2(transportData, basisMatrix, newCells, needed, target) {
+function reportBasis2(transportData, basisMatrix, newCells, needed, target) {
 	const str = newCells.map(el => `(${el.i + 1};${el.j + 1})`).join(', ');
 	print(`Однако кол-во базисных клеток должно быть равно кол-ву ПО (включая фиктивного) + кол-во ПН - 1 = ${target} (почему так решено - не имею понятия).
 		Нам не хватает еще ${needed}. Для этого среди оставшихся придется-таки найти клетки, которые не образуют с базисными <b>цикл пересчета</b>.`)
@@ -233,4 +233,10 @@ function reportPotentials2(transportData, basisMatrix, newCells, needed, target)
 	print(`В качестве таких клеток нам подходят: ${str}`);
 
 	rp1(transportData, basisMatrix);
+}
+
+function reportPotentials(uArray, vArray, basisArray) {
+	const s = sum(receiversLeft);
+	const customData = [...transports.map((row, idx) => [...row, sendersLeft[idx], uArray[idx]]), [...receiversLeft, 0, uArray[uArray.length - 1]], vArray];
+	print(createTable(customData, customLimits, infCosts, [...receivers, s, 'U<sub>i</sub>'], [...senders, s, 'V<sub>j</sub>'], basisArray));
 }

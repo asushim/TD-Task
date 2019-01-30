@@ -80,7 +80,7 @@ function selectBasis(transportData, limitsData, targetCount) {
 
 	const {basisMatrix, founded} = findMainVariables(transportData, limitsData);
 
-	reportPotentials1(transportData, basisMatrix);
+	reportBasis1(transportData, basisMatrix);
 	
 	const needed = targetCount - founded;
 
@@ -99,7 +99,14 @@ function selectBasis(transportData, limitsData, targetCount) {
 		basisMatrix[idx.i][idx.j] = true;
 	}
 
-	reportPotentials2(transportData, basisMatrix, newCells, needed, targetCount);
+	reportBasis2(transportData, basisMatrix, newCells, needed, targetCount);
 
-	return basisMatrix;
+	var basisArray = [];
+
+	for(var i = 0; i < basisMatrix.length; i++)
+		for(var j = 0; j < basisMatrix[i].length; j++)
+			if(basisMatrix[i][j])
+				basisArray.push({i, j});
+
+	return basisArray;
 }
