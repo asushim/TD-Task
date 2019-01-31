@@ -120,10 +120,6 @@ function reportFillPlan(i, j, val) {
 	reportFillCell(i - 1, j - 1, true);
 }
 
-function reportFictiveTable() {
-
-}
-
 const comboReceivers = () => receivers.map((val, idx) => `${val} (${receiversLeft[idx]})`);
 const comboSenders = () => senders.map((val, idx) => `${val} (${sendersLeft[idx]})`);
 
