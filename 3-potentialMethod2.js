@@ -89,6 +89,17 @@ function potentialMethodIteration(iter, transportData, limitsData, basisMatrix, 
 	const g0 = findG0Cells(transportData, scoringMatrix);
 	const gd = findGdCells(transportData, limitsData, scoringMatrix);
 
+	if(iter == 0){
+		reportPotentialIter1(g0, gd);
+	} else {
+		const g0str = g0.map(el => `(${el.i + 1};${el.j + 1})`).join(', ');
+		const gdstr = gd.map(el => `(${el.i + 1};${el.j + 1})`).join(', ');
+
+		print(`<font color='green'>G<sub>0</sub></font> = {<i>i,j</i> : x<sub><i>i,j</i></sub> = 0, △<sub><i>i,j</i></sub> > 0}</b> = { ${g0str} }`);
+		print(`<font color='blue'>G<sub>d</sub></font> = {<i>i,j</i> : x<sub><i>i,j</i></sub> = d<sub><i>i,j</i></sub>, △<sub><i>i,j</i></sub> < 0}</b> = { ${gdstr} }`);
+
+	}
+
 	const merged = [...g0, ...gd];
 
 	if(merged.length == 0) {
@@ -98,14 +109,22 @@ function potentialMethodIteration(iter, transportData, limitsData, basisMatrix, 
 
 	const newCell = findMaxScore(merged, scoringMatrix);
 
-	print(`Выбираем клетку с наибольшей по модулю оценкой: (${newCell.i + 1};${newCell.j + 1}). Строим от нее цикл по базисным клеткам.`);
+	if(iter == 0)
+		reportPotentialIter1_2(newCell);
+	else
+		print(`Выбираем из <font color='green'>G<sub>0</sub></font> и <font color='blue'>G<sub>d</sub></font> клетку с наибольшей по модулю оценкой: это (${newCell.i + 1};${newCell.j + 1}).
+			Строим от нее цикл пересчета по базисным клеткам.`);
 
 	//Строим цикл пересчета.
 	const loop = findLoop(newCell.i, newCell.j, basisMatrix);
-	print(loop.map(el => `(${el.i + 1};${el.j + 1})`).join(' → '));
+
+	var iter = newCell.g == 'd';
+	print(loop.map(el => `(${el.i + 1};${el.j + 1})(${(iter = !iter) ? '+' : '-'})`).join(' → '));
+
+	iter = !iter;
 
 	const plusMinus = new Array(transportData.length).fill([]).map(() => new Array(transportData[0].length).fill(undefined));
-	var iter = newCell.g == '0';
+	
 	loop.forEach(el => {
 		plusMinus[el.i][el.j] = iter ? '+' : '-';
 		iter = !iter;

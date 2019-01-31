@@ -93,6 +93,56 @@ function reportScoringMatrix(scoringMatrix, basisArray) {
 		при оценивании клеток мы руководствуемся матрицей оценок.`);
 }
 
+function reportPotentialIter1(g0, gd) {
+
+	// enableBuffered();
+
+	// print('<details open><summary>Объяснение выбора множеств G<sub>0</sub> и G<sub>d</sub> (развернуть)</summary>')
+
+	const g0str = g0.map(el => `(${el.i + 1};${el.j + 1})`).join(', ');
+	const gdstr = gd.map(el => `(${el.i + 1};${el.j + 1})`).join(', ');
+
+	let rep = `Найдем в транспортной таблице все клетки, которые <b>равны нулю</b>, но имеют соответствующую <b>оценку больше нуля</b>.`;
+
+	if(g0.length > 0)
+		rep += ` У нас такие клетки имеются (обозначены зеленым цветом).`;
+	else
+		rep += ' У нас таких клеток пока что нет.'
+
+	print(rep);
+
+	print(`Вот в чем смысл таких клеток: раз их оценка положительна, но при этом само их значение нулевое, то это значит,
+	что они могли бы подойти для перевозки груза. Понятно? Вообще, считайте, что <b>оценка клетки - это показатель, насколько она подходит
+	для того, чтобы вместить нее еще больше груза</b>.`);
+	print('Математически множество таких клеток записывается так:');
+	print(`${g0_char} = {<i>i,j</i> : x<sub><i>i,j</i></sub> = 0, △<sub><i>i,j</i></sub> > 0}</b> = { ${g0str} }`);
+
+	print(`${gd_char}, по сути, работает наоборот: мы ищем клетки, которые <b>равны их ограничению d<sub><i>ij</i></sub></b>,
+		но имеют <b>оценку меньше нуля</b>. Отрицательная оценка говорит о том, что эти клетки мало подходят для перевозки, но почему-то при этом они заполнены по максимуму 
+		и их следовало бы разгрузить.`);
+
+	print(`${gd_char} = {<i>i,j</i> : x<sub><i>i,j</i></sub> = d<sub><i>ij</i></sub>, △<sub><i>i,j</i></sub> < 0}</b> = { ${gdstr} }`);
+	// print('</details>');
+
+	// flushBuffer();
+}
+
+const g0_char = '<font color="green">G<sub>0</sub></font>';
+const gd_char = '<font color="blue">G<sub>d</sub></font>';
+
+function reportPotentialIter1_2(newCell) {
+	print(`Теперь выбираем из ${g0_char} и ${gd_char} клетку с наибольшей <b>по модулю</b> оценкой,
+		поскольку мы хотим сперва заполнить/разгрузить наиболее подходящую для этого клетку. Наибольшую по модулю оценку имеет клетка (${newCell.i + 1};${newCell.j + 1})
+		из множества ${newCell.g == '0' ? g0_char : gd_char}.`);
+
+	print(`Теперь построим от нее цикл пересчета по базисным клеткам. Напомню правила его построения: можно двигаться только по вертикали или горизонтали, и менять направление
+		только в базисных клетках.`);
+	print(`Для каждой клетки цикла мы определяем, вычитаем ли мы из нее груз или прибавляем. Определиться со знаками можно очень просто: если в клетке начала цикла <b>значение 0,
+		то ставим "+"</b>, т.к. мы хотим заполнить ее грузом. Если значение <b>не ноль - ставим "-"</b>, т.к. ее наоборот, нужно разгрузить. Затем знак просто чередуется.`);
+	print('Направление цикла не имеет значения, поскольку число его вершин всегда четно.')
+	print('Получаем вот такой цикл:')
+}
+
 function reportSpecial(transportData, scoringMatrix, merged, plusMinus, oldCell, colors) {
 
 	for(var i = 0; i < colors.length; i++)
@@ -102,10 +152,10 @@ function reportSpecial(transportData, scoringMatrix, merged, plusMinus, oldCell,
 		}
 
 	print('<div style="display: inline-block">' +
- 	'Таблица X' +
+ 	'Транспортная таблица' +
  	createTable(transportData, undefined, plusMinus, undefined, undefined, colors) +
  	'</div><div style="display: inline-block; margin-left: 20px;">' +
- 	'Таблица △' +
+ 	'Матрица оценок' +
  	createTable(scoringMatrix, undefined, undefined, undefined, undefined, merged) +
  	'</div>');
 }
@@ -126,10 +176,10 @@ function reportSpecial2(transportData, customLimits, plusMinus, oldCell, newCell
 		print(`Мы добавляем эту клетку в базис, но ее же и сразу оттуда выносим. В результате базисные переменные не меняются, и матрица оценок не пересчитывается.`);
 
 	print('<div style="display: inline-block">' +
- 	(moveSize == 0 ? 'Транспортная таблица не меняется' : 'После перемещения получаем новую<br>транспортную матрицу:') +
+ 	(moveSize == 0 ? 'Транспортная таблица не меняется' : `К ячейкам "+" добавляем, ${moveSize}, из ячеек "-" - вычитаем.<br>Получаем новую транспортную таблицу:`) +
  	createTable(transportData, customLimits, moveSize == 0 ? undefined : plusMinus, undefined, undefined, colors) + (equals ? '' :
  	'</div><div style="display: inline-block; margin-left: 20px;">' +
- 	`Из строк таблицы △ вычитаем значение ячейки (${newCell.i + 1};${newCell.j + 1}), к столбцам его прибавляем` +
+ 	`Из строк таблицы оценок вычитаем значение ячейки (${newCell.i + 1};${newCell.j + 1}),<br>к столбцам его прибавляем.` +
  	createTable(scoringMatrix, undefined, undefined, undefined, undefined, cellIdxes)) +
  	'</div>');
 }
