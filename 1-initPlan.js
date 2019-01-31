@@ -70,7 +70,13 @@ function buildInitPlan() {
 
 	var targetCount = senders.length * receivers.length;
 
-	while((i || j) && (visitedCount < targetCount)) {
+	var prevI = undefined;
+	var prevJ = undefined;
+
+	while((i || j) && (i != prevI || j != prevJ) && (visitedCount < targetCount)) {
+
+		prevI = i;
+		prevJ = j;
 
 		var firstIter = true;
 
