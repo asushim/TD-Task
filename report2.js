@@ -110,16 +110,26 @@ function reportSpecial(transportData, scoringMatrix, merged, plusMinus, oldCell,
  	'</div>');
 }
 
-function reportSpecial2(transportData, customLimits, plusMinus, oldCell, newCell, moveSize, colors, scoringMatrix, cellIdxes, score) {
+function reportSpecial2(transportData, customLimits, plusMinus, oldCell, newCell, moveSize, colors, scoringMatrix, cellIdxes) {
+
+	const equals = newCell.i == oldCell.i && newCell.j == oldCell.j;
 
 	print(`Собственно, определяем, сколько груза можно таскать. Это определяет клетка (${oldCell.i + 1};${oldCell.j + 1}).
-			Ее значение: ${moveSize}. Вспоследствии она выбывает из базиса, зато (${newCell.i + 1};${newCell.j + 1}) - вносится.`);
+			Ее значение: ${moveSize}.`);
+
+	if(moveSize == 0)
+		print('Раз таскать нечего, то транспортная матрица не меняется, а только пересчитывается таблица оценок.');
+
+	if(!equals)
+		print(`Вспоследствии она выбывает из базиса, зато (${newCell.i + 1};${newCell.j + 1}) - вносится.`);
+	else
+		print(`Мы добавляем эту клетку в базис, но ее же и сразу оттуда выносим. В результате базисные переменные не меняются, и матрица оценок не пересчитывается.`);
 
 	print('<div style="display: inline-block">' +
- 	'После перемещения получаем новую<br>транспортную матрицу:' +
- 	createTable(transportData, customLimits, plusMinus, undefined, undefined, colors) +
+ 	(moveSize == 0 ? 'Транспортная таблица не меняется' : 'После перемещения получаем новую<br>транспортную матрицу:') +
+ 	createTable(transportData, customLimits, moveSize == 0 ? undefined : plusMinus, undefined, undefined, colors) + (equals ? '' :
  	'</div><div style="display: inline-block; margin-left: 20px;">' +
- 	`Из строк таблицы △ вычитаем ${score}, к столбцам его прибавляем` +
- 	createTable(scoringMatrix, undefined, undefined, undefined, undefined, cellIdxes) +
+ 	`Из строк таблицы △ вычитаем значение ячейки (${newCell.i + 1};${newCell.j + 1}), к столбцам его прибавляем` +
+ 	createTable(scoringMatrix, undefined, undefined, undefined, undefined, cellIdxes)) +
  	'</div>');
 }
