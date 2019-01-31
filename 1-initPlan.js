@@ -80,13 +80,15 @@ function buildInitPlan() {
 
 		var firstIter = true;
 
+		var nextI, nextJ;
+
 		while(sendersLeft[i] != 0 || firstIter) {
 			if(startWithCol) {
 				startWithCol = false;
 				break;
 			}
 
-			const nextJ = findBestCell(costs[i], visited[i], receiversLeft, j);
+			nextJ = findBestCell(costs[i], visited[i], receiversLeft, j);
 
 			if(nextJ == undefined) {
 				// closeRow(i);
@@ -112,6 +114,12 @@ function buildInitPlan() {
 			reportFillPlan(i, j, val);
 			firstIter = false;
 		}
+
+		if(sendersLeft[i] == 0)
+			reportSwitch(true, i);
+		else
+			if(nextJ == undefined)
+				reportNowhere(true, i);	
 
 		firstIter = true;
 
@@ -141,6 +149,13 @@ function buildInitPlan() {
 			reportFillPlan(i, j, val);
 			firstIter = false;
 		}
+
+		if(receiversLeft[j] == 0)
+			reportSwitch(false, j);
+		else
+			if(nextI == undefined)
+				reportNowhere(false, j);
 	}
+	
 	reportResultInitPlan(visitedCount, targetCount);
 }
