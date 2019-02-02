@@ -2,7 +2,7 @@ function findG0Cells(transportData, scoringMatrix) {
 	var g0 = [];
 
 	for(var i = 0; i < transportData.length; i++)
-		for(var j = 0; j < transportData[i].length; j++) 
+		for(var j = 0; j < transportData[i].length; j++)
 			if(transportData[i][j] == 0 && scoringMatrix[i][j].greater(0))
 				g0.push({i, j, g:'0'});
 
@@ -13,11 +13,11 @@ function findGdCells(transportData, limitsData, scoringMatrix) {
 	var gd = [];
 
 	for(var i = 0; i < transportData.length; i++)
-		for(var j = 0; j < transportData[i].length; j++) 
+		for(var j = 0; j < transportData[i].length; j++)
 			if(transportData[i][j] == limitsData[i][j] && scoringMatrix[i][j].less(0))
 				gd.push({i, j, g:'d'});
 
-	return gd;	
+	return gd;
 }
 
 function rebuildScoringMatrix(scoringMatrix, basisMatrix, cell) {
@@ -84,6 +84,7 @@ function findMaxScore(set, scoringMatrix) {
 }
 
 function potentialMethodIteration(iter, transportData, limitsData, basisMatrix, basisArray, scoringMatrix) {
+	var currrrrriter = iter;
 	print('Итерация ' + (iter + 1));
 
 	const g0 = findG0Cells(transportData, scoringMatrix);
@@ -124,7 +125,7 @@ function potentialMethodIteration(iter, transportData, limitsData, basisMatrix, 
 	iter = !iter;
 
 	const plusMinus = new Array(transportData.length).fill([]).map(() => new Array(transportData[0].length).fill(undefined));
-	
+
 	loop.forEach(el => {
 		plusMinus[el.i][el.j] = iter ? '+' : '-';
 		iter = !iter;
@@ -133,6 +134,8 @@ function potentialMethodIteration(iter, transportData, limitsData, basisMatrix, 
 	var moveSize = BIGGEST_VALUE;
 	var oldCell;
 
+	console.log(currrrrriter+1)
+	console.log(`G${newCell.g}`)
 	for(var i = 0; i < loop.length; i++) {
 		const franxx = loop[i];
 		const loopValue = transportData[franxx.i][franxx.j];
@@ -145,8 +148,11 @@ function potentialMethodIteration(iter, transportData, limitsData, basisMatrix, 
 		const current = bool ? loopValue : limitsData[franxx.i][franxx.j] - loopValue;
 
 		if(current < moveSize) {
+			console.log(`i=${franxx.i+1}, j=${franxx.j+1} record from ${moveSize} to ${current}, bool=${bool}`)
 			moveSize = current;
 			oldCell = franxx;
+		} else {
+			console.log(`i=${franxx.i+1}, j=${franxx.j+1} record ${moveSize} not changed, current=${current}, bool=${bool}`)
 		}
 	}
 

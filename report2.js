@@ -25,7 +25,7 @@ function reportBasis2(transportData, basisMatrix, newCells, needed, target) {
 		проходит мимо.
 		<p><a href='https://helpiks.org/helpiksorg/baza7/170642055149.files/image154.jpg' target="_blank">Вот здесь</a> картинка с примерами такого цикла.</p>
 		</details>`);
-	
+
 	const str = newCells.map(el => `(${el.i + 1};${el.j + 1})`).join(', ');
 
 	print(`В качестве таких клеток нам подходят: ${str}`);
@@ -34,7 +34,7 @@ function reportBasis2(transportData, basisMatrix, newCells, needed, target) {
 		print(`<i></p>Ага, судя по всему, вы решили прогнать калькулятор на данных Гольдштейна. Что-ж, как вы могли заметить, с этого момента
 			наши с ним пути расходятся и сойдутся только в конечном результате.</p>
 			<p>Дело в том, что каькулятор в силу своей программной породы ищет доп. базисные переменные по строке, а Гольдштейн - по столбцу.</p>
-			<p>Если хотите, можете поменять 
+			<p>Если хотите, можете поменять
 			<a href="https://github.com/asushim/TD-Task/blob/a8ace86a68b114a4935b14e19a305b6bf1cc33a5/2-selectBasis.js#L81" target="_blank">вот эти</a>
 			строки местами, и тогда вы полностью синхронизирутесь с Гольдштейном (при желании даже сможете пилотировать с ним Егерей).</p></i>`);
 	}
@@ -64,15 +64,15 @@ function reportPotentials(uArray, vArray, basisArray) {
 	const s = sum(receiversLeft);
 	const customData = [...transports.map((row, idx) => [...row, sendersLeft[idx], uArray[idx]]), [...receiversLeft, 0, uArray[uArray.length - 1]], vArray];
 
-	var str = '<div style="display: inline-block;">' + 
+	var str = '<div style="display: inline-block;">' +
 		createTable(customData, customLimits, infCosts, [...receivers, s, 'U<sub>i</sub>'], [...senders, s, 'V<sub>j</sub>'], basisArray) +
 		'</div><div style="display: inline-block; margin-left: 30px; vertical-align:top;"><p>' +
-		split1.map(el => `<b>V<sub>${el.j + 1}</sub> - U<sub>${el.i + 1}</sub> = ${infCosts[el.i][el.j]}`).join('</p><p>') + 
+		split1.map(el => `<b>V<sub>${el.j + 1}</sub> - U<sub>${el.i + 1}</sub> = ${infCosts[el.i][el.j]}`).join('</p><p>') +
 		'</p></div>';
 
 	if(split2)
 		str += '<div style="display: inline-block; margin-left: 30px; vertical-align:top;"><p>' +
-		split2.map(el => `<b>V<sub>${el.j + 1}</sub> - U<sub>${el.i + 1}</sub> = ${infCosts[el.i][el.j]}`).join('</p><p>') + 
+		split2.map(el => `<b>V<sub>${el.j + 1}</sub> - U<sub>${el.i + 1}</sub> = ${infCosts[el.i][el.j]}`).join('</p><p>') +
 		'</p></div>';
 
 	print(str);
@@ -88,7 +88,7 @@ function reportScoringMatrix(scoringMatrix, basisArray) {
 		Самые умные наверняка уже сравнили эту формулу с (1), и поняли, что для базисных клеток △<sub>ij</sub> будет 0.`);
 
 	print(createTable(scoringMatrix, undefined, undefined, undefined, undefined, basisArray));
-	
+
 	print(`Начиная с этого момента, можете спокойно забыть про таблицу <font color='blue'>стоимостей</font>. Она нам больше не потребуется, поскольку теперь
 		при оценивании клеток мы руководствуемся матрицей оценок.`);
 }
@@ -118,7 +118,7 @@ function reportPotentialIter1(g0, gd) {
 	print(`${g0_char} = {<i>i,j</i> : x<sub><i>i,j</i></sub> = 0, △<sub><i>i,j</i></sub> > 0}</b> = { ${g0str} }`);
 
 	print(`${gd_char}, по сути, работает наоборот: мы ищем клетки, которые <b>равны их ограничению d<sub><i>ij</i></sub></b>,
-		но имеют <b>оценку меньше нуля</b>. Отрицательная оценка говорит о том, что эти клетки мало подходят для перевозки, но почему-то при этом они заполнены по максимуму 
+		но имеют <b>оценку меньше нуля</b>. Отрицательная оценка говорит о том, что эти клетки мало подходят для перевозки, но почему-то при этом они заполнены по максимуму
 		и их следовало бы разгрузить.`);
 
 	print(`${gd_char} = {<i>i,j</i> : x<sub><i>i,j</i></sub> = d<sub><i>ij</i></sub>, △<sub><i>i,j</i></sub> < 0}</b> = { ${gdstr} }`);
@@ -153,10 +153,10 @@ function reportSpecial(transportData, scoringMatrix, merged, plusMinus, oldCell,
 
 	print('<div style="display: inline-block">' +
  	'Транспортная таблица' +
- 	createTable(transportData, undefined, plusMinus, undefined, undefined, colors) +
+ 	'<br><br>' + createTable(transportData, undefined, plusMinus, undefined, undefined, colors) +
  	'</div><div style="display: inline-block; margin-left: 20px;">' +
  	'Матрица оценок' +
- 	createTable(scoringMatrix, undefined, undefined, undefined, undefined, merged) +
+ 	'<br><br>' + createTable(scoringMatrix, undefined, undefined, undefined, undefined, merged) +
  	'</div>');
 }
 
@@ -177,9 +177,9 @@ function reportSpecial2(transportData, customLimits, plusMinus, oldCell, newCell
 
 	print('<div style="display: inline-block">' +
  	(moveSize == 0 ? 'Транспортная таблица не меняется' : `К ячейкам "+" добавляем, ${moveSize}, из ячеек "-" - вычитаем.<br>Получаем новую транспортную таблицу:`) +
- 	createTable(transportData, customLimits, moveSize == 0 ? undefined : plusMinus, undefined, undefined, colors) + (equals ? '' :
+ 	'<br><br>' + createTable(transportData, customLimits, moveSize == 0 ? undefined : plusMinus, undefined, undefined, colors) + (equals ? '' :
  	'</div><div style="display: inline-block; margin-left: 20px;">' +
  	`Из строк таблицы оценок вычитаем значение ячейки (${newCell.i + 1};${newCell.j + 1}),<br>к столбцам его прибавляем.` +
- 	createTable(scoringMatrix, undefined, undefined, undefined, undefined, cellIdxes)) +
+ 	'<br><br>' + createTable(scoringMatrix, undefined, undefined, undefined, undefined, cellIdxes)) +
  	'</div>');
 }
